@@ -1,33 +1,54 @@
 <script>
 	import { onMount } from 'svelte';
+	import { io } from 'socket.io-client';
 
 	import Card from '../components/Card.svelte';
 	import Accordion from '../components/Accordion.svelte';
 
+	const socket = io('http://localhost:8080');
+
 	const CHANNEL_ID = 'UCqadGlYJrhCbHzsCnXWOmpA';
 
-	let mySubscriptions = undefined;
+	let current = 0;
+	let total = 0;
+	let end = false;
+	let mySubscriptions = [];
 
-	onMount(async () => {
-		const response = await fetch(`http://localhost:8080/channel/${CHANNEL_ID}`);
+	onMount(() => {
+		socket.on('connect', () => {
+			console.log(`Socket connected ${socket.id}`);
 
-		mySubscriptions = await response.json();
+			socket.emit('start', { channelId: CHANNEL_ID });
+		});
+
+		socket.on('progress', (response) => {
+			console.log('🚀 ~ progress response', response);
+
+			current = response.current;
+			total = response.total;
+			mySubscriptions = [...mySubscriptions, ...response.items];
+		});
+
+		socket.on('end', (response) => {
+			console.log('🚀 ~ end response', response);
+
+			end = true;
+		});
 	});
 </script>
 
 <main>
 	<h1>Subscriptions</h1>
 
-	{#if mySubscriptions === undefined}
-		<p>Loading...</p>
-	{:else}
-		{#each mySubscriptions as { snippet }}
-			<article>
-				<Card {snippet} />
-				<Accordion channelId={snippet.resourceId.channelId} />
-			</article>
-		{/each}
-	{/if}
+	<p>{current}/{total}</p>
+	<p>end: {end ? 'yes' : 'no'}</p>
+
+	{#each mySubscriptions as { snippet }}
+		<article>
+			<Card {snippet} />
+			<Accordion channelId={snippet.resourceId.channelId} />
+		</article>
+	{/each}
 </main>
 
 <style>

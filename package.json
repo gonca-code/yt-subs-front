@@ -1,6 +1,7 @@
 {
 	"name": "yt-subs-front",
 	"version": "0.0.1",
+	"type": "module",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
@@ -10,6 +11,10 @@
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
 		"format": "prettier --write --plugin-search-dir=. ."
 	},
+	"dependencies": {
+		"socket.io-client": "^4.5.1",
+		"svelte": "^3.44.0"
+	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
@@ -17,8 +22,6 @@
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"prettier": "^2.6.2",
-		"prettier-plugin-svelte": "^2.7.0",
-		"svelte": "^3.44.0"
-	},
-	"type": "module"
+		"prettier-plugin-svelte": "^2.7.0"
+	}
 }
